@@ -1,0 +1,12 @@
+Package: flowtools
+Type: Package
+Title: Tools for Analyzing FlowCytometry Data
+Version: 0.1.0
+Author: Gresham Lab
+Maintainer: David Gresham <dgresham@nyu.edu>
+Description: Tools for analyzing flow data
+    useful for quantifying copy number using a CNV reporter
+    general tools for quantifying and visualizing fuorescence
+License: MIT + license
+Encoding: UTF-8
+LazyData: true
