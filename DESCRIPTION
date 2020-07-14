@@ -10,3 +10,5 @@ Description: Tools for analyzing flow data
 License: MIT + license
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/GreshamLab/flowtools
+BugReports: https://github.com/GreshamLab/flowtools/issues
