@@ -12,3 +12,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/GreshamLab/flowtools
 BugReports: https://github.com/GreshamLab/flowtools/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -1,0 +1,113 @@
+---
+title: "flowtools-vignette"
+author: 'David Gresham'
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{flowtools-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(flowtools)
+```
+
+The goal of this vignette is to provide examples of commonly used workflows in the Gresham lab for performing flow cytometry analysis.  It integrates existing tools from R packages that are used to analyze flow data as well as custom functions that are part of `flowtools` an R package written by the Gresham lab to simplify flow analysis.
+
+The primary examples are motivated by copy number variant detetion using a [CNV reporter](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3000069), but the tools and methods are also applicable to other applications such as determining ploidy from FACS data or quantifying gene expression.
+
+The code for this vignette and the `flowtools` package is available in the [github repo](https://github.com/GreshamLab/flowtools).
+
+## Load Required libraries
+
+Flow cytometry anlaysis in R requires several distinct libraries in addition to `flowtools`.  The first step in any analysis is to load all libraries.  In some cases, these libraries may first have to be downloaded using `install.packages`.
+
+```{r}
+#intstall.packages(flowCore)
+#intstall.packages(flowViz)
+#intstall.packages(ggcyto)
+#intstall.packages(ggforce)
+#intstall.packages(tidyverse)
+#intstall.packages(ggridges)
+library(flowCore)
+library(flowViz)
+library(ggcyto)
+library(ggforce)
+library(tidyverse)
+library(ggridges)
+```
+
+## Reading in Data
+
+FCS files exported from different flow cytometry machines can be read into R
+To read in data we use `read.ncdfFlowSet`
+
+### Accuri Data
+The raw Accuri data can be downloaded from here
+```{r}
+#working directory
+dir = '.'
+
+#file location
+#Used for data files being outside of home directory
+path.data = '~/Projects/data/flowdata/Accuri'
+
+#set name of run to create gates for
+#Should be the same name as the folder that your .fcs files are in
+name <- "Accuri"
+
+#load sample sheet
+sample.sheet <- read.csv(paste(path.data,"/samplesheet_",name,".csv", sep=""))
+
+#read in fcs files in order presented in sample sheet (based on well identifier)
+#files <- paste(path.data,"/",sort(factor(list.files(paste(path.data,"/", sep=""),full.names=FALSE), levels = paste(sample.sheet$Well,".fcs",sep="" ), ordered=TRUE)),sep="")
+
+files <- sort(list.files(path=path.data,pattern = ".fcs", full.names=TRUE))
+#files1 <- paste0(path.data, files, sep)
+flowData <- read.ncdfFlowSet(files=files, pattern=".fcs", alter.names = TRUE)
+
+#Ensures that the number of entries in the sample sheet match the number of flowFrames in the flowSet
+sample.ind <- which(paste(sample.sheet$Well,".fcs", sep="") %in% sampleNames(flowData))
+sample.sheet <- sample.sheet[sample.ind,]
+sample.sheet <- sample.sheet[order(sample.sheet$Well),]
+
+#rename sample name of flow set to make it easier to identify
+sampleNames(flowData) <- paste(gsub(" ","_",sample.sheet$Strain),"_",sub(" ","_",sample.sheet$Well), sep="")
+
+
+###David's improved code below
+dir = '~/Projects/data/flowdata/Accuri'
+files <- sort(list.files(path=dir,pattern = ".fcs", full.names=TRUE))
+flowData <- read.ncdfFlowSet(files=files, pattern=".fcs", alter.names = TRUE)
+
+#needs to differ depending on sample sheet file type
+sample.sheet <- read_excel(paste(path=dir,"GAP1_multicheck_20May2019.xlsx", sep="/"))
+
+
+print(flowData)
+```
+
+### Cytek Data
+The raw Cytek data can be downloaded from here
+```{r}
+
+```
+
+### FACSAria Data
+The raw FACSAria data can be downloaded from here
+```{r}
+
+```
+
+
+
+
+## Gating
