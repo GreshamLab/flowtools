@@ -31,24 +31,42 @@ The code for this vignette and the `flowtools` package is available in the [gith
 Flow cytometry anlaysis in R requires several distinct libraries in addition to `flowtools`.  The first step in any analysis is to load all libraries.  In some cases, these libraries may first have to be downloaded using `install.packages`.
 
 ```{r}
-#intstall.packages(flowCore)
-#intstall.packages(flowViz)
-#intstall.packages(ggcyto)
-#intstall.packages(ggforce)
-#intstall.packages(tidyverse)
-#intstall.packages(ggridges)
+#install.packages(flowCore)
+#install.packages(flowViz)
+#install.packages(ggcyto)
+#install.packages(ggforce)
+#install.packages(tidyverse)
+#install.packages(ggridges)
 library(flowCore)
 library(flowViz)
 library(ggcyto)
 library(ggforce)
 library(tidyverse)
 library(ggridges)
+library(readxl)
 ```
 
 ## Reading in Data
 
 FCS files exported from different flow cytometry machines can be read into R
 To read in data we use `read.ncdfFlowSet`
+
+```{r}
+###David's improved code below
+dir = '~/Projects/data/flowdata/Accuri'
+files <- sort(list.files(path=dir,pattern = ".fcs", full.names=TRUE))
+flowData <- read.ncdfFlowSet(files=files, pattern=".fcs", alter.names = TRUE)
+
+#needs to differ depending on sample sheet file type
+sample.sheet <- read_excel(paste(path=dir,"GAP1_multicheck_20May2019.xlsx", sep="/"))
+
+
+print(flowData)
+```
+
+
+
+
 
 ### Accuri Data
 The raw Accuri data can be downloaded from here
@@ -83,16 +101,7 @@ sample.sheet <- sample.sheet[order(sample.sheet$Well),]
 sampleNames(flowData) <- paste(gsub(" ","_",sample.sheet$Strain),"_",sub(" ","_",sample.sheet$Well), sep="")
 
 
-###David's improved code below
-dir = '~/Projects/data/flowdata/Accuri'
-files <- sort(list.files(path=dir,pattern = ".fcs", full.names=TRUE))
-flowData <- read.ncdfFlowSet(files=files, pattern=".fcs", alter.names = TRUE)
 
-#needs to differ depending on sample sheet file type
-sample.sheet <- read_excel(paste(path=dir,"GAP1_multicheck_20May2019.xlsx", sep="/"))
-
-
-print(flowData)
 ```
 
 ### Cytek Data
